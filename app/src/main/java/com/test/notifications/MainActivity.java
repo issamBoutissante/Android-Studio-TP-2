@@ -6,7 +6,9 @@ import androidx.core.app.NotificationCompat;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,14 +31,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.b6).setOnClickListener(this);
         findViewById(R.id.b7).setOnClickListener(this);
         duree=findViewById(R.id.durre);
+        //this function will create a notification channel for the first install of the application
+        createChannel();
     }
     private void SendNotification() {
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
-            NotificationChannel channel=new NotificationChannel("1","My Channel",NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("my channel description");
-            NotificationManager nm=getSystemService(NotificationManager.class);
-            nm.createNotificationChannel(channel);
-        }
+        Intent intent=new Intent(this,MainActivity.class);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this,0,intent,0);
         NotificationCompat.Builder b = new
                 NotificationCompat.Builder(this,"1");
         b.setAutoCancel(true)
@@ -46,10 +46,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setTicker("Formation Android")
                 .setContentTitle("Notification")
                 .setContentText("bonjour mes collegues je suis heureux d'etre avec vous :).")
-                .setContentInfo("INFO");
+                .setContentInfo("INFO")
+        .setContentIntent(pendingIntent);
         NotificationManager nm = (NotificationManager)
                 this.getSystemService(this.NOTIFICATION_SERVICE);
         nm.notify(1, b.build());
+    }
+    public void createChannel(){
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            NotificationChannel channel =new NotificationChannel("1","small channel",NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("this channel is just for testing");
+            NotificationManager notificationManager=getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     @Override
@@ -143,7 +152,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         });
                 alert= adb.create();
                 alert.show();
-
                 break;
         }
     }
